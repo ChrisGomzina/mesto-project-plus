@@ -18,7 +18,7 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.notFound());
+        next(Errors.notFoundRequest());
       } else {
         next(err);
       }
@@ -59,7 +59,7 @@ export const patchUser = (req: AuthRequest, res: Response, next: NextFunction) =
     .select('-__v')
     .then((user) => {
       if (!user) {
-        throw Errors.notFound();
+        throw Errors.notFoundRequest();
       }
       res.send(user);
     })
@@ -86,7 +86,7 @@ export const patchUserAvatar = (req: AuthRequest, res: Response, next: NextFunct
     .select('-__v')
     .then((user) => {
       if (!user) {
-        throw Errors.notFound();
+        throw Errors.notFoundRequest();
       }
       res.send(user);
     })

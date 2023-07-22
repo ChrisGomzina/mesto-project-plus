@@ -17,15 +17,11 @@ export const postCard = (req: AuthRequest, res: Response, next: NextFunction) =>
   const {
     name,
     link,
-    likes,
-    createdAt,
   } = req.body;
   Card.create({
     name,
     link,
     owner: userId,
-    likes,
-    createdAt,
   })
     .then((card) => {
       res.send(card);
@@ -43,7 +39,7 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw Errors.notFound();
+        throw Errors.notFoundRequest();
       }
       res.send({
         message: 'Карточка удалена',
@@ -51,7 +47,7 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.notFound());
+        next(Errors.notFoundRequest());
       } else {
         next(err);
       }
@@ -67,7 +63,7 @@ export const putLike = (req: AuthRequest, res: Response, next: NextFunction) => 
   )
     .then((card) => {
       if (!card) {
-        throw Errors.notFound();
+        throw Errors.notFoundRequest();
       }
       res.send({
         message: 'Лайк поставлен',
@@ -91,7 +87,7 @@ export const deleteLike = (req: AuthRequest, res: Response, next: NextFunction) 
   )
     .then((card) => {
       if (!card) {
-        throw Errors.notFound();
+        throw Errors.notFoundRequest();
       }
       res.send({
         message: 'Лайк удален',
