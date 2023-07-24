@@ -14,15 +14,12 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
   User.findById(req.params.userId)
     .select('-__v')
     .then((user) => {
+      if (!user) {
+        throw Errors.notFoundRequest();
+      }
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(Errors.notFoundRequest());
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 export const postUser = (req: Request, res: Response, next: NextFunction) => {
