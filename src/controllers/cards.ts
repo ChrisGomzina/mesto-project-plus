@@ -47,7 +47,7 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.notFoundRequest());
+        next(Errors.badRequest());
       } else {
         next(err);
       }
