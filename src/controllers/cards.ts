@@ -45,7 +45,13 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
         message: 'Карточка удалена',
       });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(Errors.invalidId());
+      } else {
+        next(err);
+      }
+    });
 };
 
 export const putLike = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -63,7 +69,13 @@ export const putLike = (req: AuthRequest, res: Response, next: NextFunction) => 
         message: 'Лайк поставлен',
       });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(Errors.invalidId());
+      } else {
+        next(err);
+      }
+    });
 };
 
 export const deleteLike = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -81,5 +93,11 @@ export const deleteLike = (req: AuthRequest, res: Response, next: NextFunction) 
         message: 'Лайк удален',
       });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(Errors.invalidId());
+      } else {
+        next(err);
+      }
+    });
 };

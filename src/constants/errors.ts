@@ -8,6 +8,11 @@ export const NOT_FOUND_REQUEST = {
   message: 'Карточка или пользователь не найден',
 };
 
+export const INVALID_ID_ERROR = {
+  code: 404,
+  message: 'Передан невалидный id',
+};
+
 export const NOT_FOUND_PAGE = {
   code: 404,
   message: 'Страница не найдена',

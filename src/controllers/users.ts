@@ -19,7 +19,13 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
       }
       res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(Errors.invalidId());
+      } else {
+        next(err);
+      }
+    });
 };
 
 export const postUser = (req: Request, res: Response, next: NextFunction) => {
