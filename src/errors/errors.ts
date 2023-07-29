@@ -3,6 +3,9 @@ import {
   NOT_FOUND_REQUEST,
   NOT_FOUND_PAGE,
   INVALID_ID_ERROR,
+  AUTHORIZATION_ERROR,
+  UNAURHORIZATION_ERROR,
+  FORBIDDEN_ERROR,
 } from '../constants/errors';
 
 class Errors extends Error {
@@ -27,6 +30,18 @@ class Errors extends Error {
 
   static invalidId() {
     return new Errors(INVALID_ID_ERROR.code, INVALID_ID_ERROR.message);
+  }
+
+  static authorizationError() {
+    return new Errors(AUTHORIZATION_ERROR.code, AUTHORIZATION_ERROR.message);
+  }
+
+  static unauthorizationError() {
+    return new Errors(UNAURHORIZATION_ERROR.code, UNAURHORIZATION_ERROR.message);
+  }
+
+  static forbiddenError() {
+    return new Errors(FORBIDDEN_ERROR.code, FORBIDDEN_ERROR.message);
   }
 }
 

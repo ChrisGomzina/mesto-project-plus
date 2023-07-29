@@ -1,4 +1,6 @@
 import { Response, NextFunction, Request } from 'express';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import Error from '../errors/errors';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -7,11 +9,23 @@ export interface AuthRequest extends Request {
 }
 
 const userAuthorization = (req: AuthRequest, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: '64baa19a80d7c8e09dd57abd',
-  };
-
-  next();
+  const { cookie } = req.headers;
+  if (!cookie) {
+    next(Error.unauthorizationError());
+  } else {
+    try {
+      const payload = jwt.verify(
+        cookie!.split('=')[1],
+        'super-secret',
+      ) as JwtPayload;
+      req.user = {
+        _id: payload?._id,
+      };
+      next();
+    } catch (error) {
+      next(Error.unauthorizationError());
+    }
+  }
 };
 
 export default userAuthorization;

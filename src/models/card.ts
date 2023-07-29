@@ -19,7 +19,7 @@ const cardSchema = new mongoose.Schema<ICard>(
     link: {
       type: String,
       required: true,
-      match: /^https?:\/\/.+/,
+      match: /^(http|https):\/\/[a-zA-Z0-9]+([-.[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5}(:[0-9]{1,5})?((\/[a-zA-Z0-9%-~]+)*)?(#[a-zA-Z0-9_%-]*)?$/,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
