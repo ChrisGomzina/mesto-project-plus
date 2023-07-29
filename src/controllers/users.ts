@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import Errors from '../errors/errors';
-import { AuthRequest } from '../middlewares/authorization';
+import { AuthRequest } from '../middlewares/auth';
 
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find({})
@@ -10,8 +12,9 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
     .catch(next);
 };
 
-export const getUserById = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.params.userId)
+export const getUserById = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const { userId } = req.params;
+  User.findById(userId)
     .select('-__v')
     .then((user) => {
       if (!user) {
@@ -29,19 +32,34 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const postUser = (req: Request, res: Response, next: NextFunction) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const {
+    name,
+    about,
+    avatar,
+    email,
+  } = req.body;
+  bcrypt.hash(req.body.password, 10)
+    .then((hash: string) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => {
       res.send({
-        name,
-        about,
-        avatar,
         _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
       });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(Errors.badRequest());
+      } else if (err.code === 11000) {
+        next(Errors.conflictError());
       } else {
         next(err);
       }
@@ -50,10 +68,10 @@ export const postUser = (req: Request, res: Response, next: NextFunction) => {
 
 export const patchUser = (req: AuthRequest, res: Response, next: NextFunction) => {
   const _id = req.user?._id;
-  const { name, about, avatar } = req.body;
+  const { name, about } = req.body;
   User.findOneAndUpdate(
     { _id },
-    { name, about, avatar },
+    { name, about },
     {
       new: true,
       runValidators: true,
@@ -96,6 +114,38 @@ export const patchUserAvatar = (req: AuthRequest, res: Response, next: NextFunct
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(Errors.badRequest());
+      } else {
+        next(err);
+      }
+    });
+};
+
+export const login = (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'super-secret', {
+        expiresIn: '3d',
+      });
+      res.cookie('token', token, { httpOnly: true });
+      res.send({ message: 'Успешная авторизация' });
+    })
+    .catch(next);
+};
+
+export const getCurrentUser = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const _id = req.user?._id;
+  User.findById(_id)
+    .select('-__v')
+    .then((user) => {
+      if (!user) {
+        throw Errors.notFoundRequest();
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(Errors.invalidId());
       } else {
         next(err);
       }
