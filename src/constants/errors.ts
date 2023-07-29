@@ -33,6 +33,11 @@ export const NOT_FOUND_PAGE = {
   message: 'Страница не найдена',
 };
 
+export const CONFLICT_ERROR = {
+  code: 409,
+  message: 'Пользователь с такой почтой уже существует',
+};
+
 export const INTERNAL_SERVER_ERROR = {
   code: 500,
   message: 'Ошибка по умолчанию',

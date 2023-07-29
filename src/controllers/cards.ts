@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import Errors from '../errors/errors';
 import Card from '../models/card';
-import { AuthRequest } from '../middlewares/authorization';
+import { AuthRequest } from '../middlewares/auth';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({})

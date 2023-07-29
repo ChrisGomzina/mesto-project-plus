@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import Errors from '../errors/errors';
-import { AuthRequest } from '../middlewares/authorization';
+import { AuthRequest } from '../middlewares/auth';
 
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find({})
@@ -58,6 +58,8 @@ export const postUser = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(Errors.badRequest());
+      } else if (err.code === 11000) {
+        next(Errors.conflictError());
       } else {
         next(err);
       }
