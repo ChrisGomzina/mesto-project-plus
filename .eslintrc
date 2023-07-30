@@ -45,6 +45,9 @@
                     "_id"
                 ]
             }
+        ],
+        "import/prefer-default-export": [
+            "off"
         ]
     }
 }

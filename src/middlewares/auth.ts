@@ -1,6 +1,7 @@
 import { Response, NextFunction, Request } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import Error from '../errors/errors';
+import { ERROR } from '../constants/errors';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -11,7 +12,7 @@ export interface AuthRequest extends Request {
 const userAuthorization = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { cookie } = req.headers;
   if (!cookie) {
-    next(Error.unauthorizationError());
+    next(Error.authorizationError(ERROR.message.UNAURHORIZATION_ERROR));
   } else {
     try {
       const payload = jwt.verify(
@@ -23,7 +24,7 @@ const userAuthorization = (req: AuthRequest, res: Response, next: NextFunction) 
       };
       next();
     } catch (error) {
-      next(Error.unauthorizationError());
+      next(Error.authorizationError(ERROR.message.UNAURHORIZATION_ERROR));
     }
   }
 };

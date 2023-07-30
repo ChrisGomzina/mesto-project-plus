@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import Errors from '../errors/errors';
+import { ERROR } from '../constants/errors';
 import Card from '../models/card';
 import { AuthRequest } from '../middlewares/auth';
 
@@ -28,7 +29,7 @@ export const postCard = (req: AuthRequest, res: Response, next: NextFunction) =>
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(Errors.badRequest());
+        next(Errors.badRequest(ERROR.message.BAD_REQUEST));
       } else {
         next(err);
       }
@@ -40,7 +41,7 @@ export const deleteCard = (req: AuthRequest, res: Response, next: NextFunction) 
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       if (card.owner.toString() !== userId) {
         throw Errors.forbiddenError();
@@ -55,7 +56,7 @@ export const deleteCard = (req: AuthRequest, res: Response, next: NextFunction) 
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.invalidId());
+        next(Errors.badRequest(ERROR.message.INVALID_ID_ERROR));
       } else {
         next(err);
       }
@@ -71,7 +72,7 @@ export const putLike = (req: AuthRequest, res: Response, next: NextFunction) => 
   )
     .then((card) => {
       if (!card) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       res.send({
         message: 'Лайк поставлен',
@@ -79,7 +80,7 @@ export const putLike = (req: AuthRequest, res: Response, next: NextFunction) => 
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.invalidId());
+        next(Errors.badRequest(ERROR.message.INVALID_ID_ERROR));
       } else {
         next(err);
       }
@@ -95,7 +96,7 @@ export const deleteLike = (req: AuthRequest, res: Response, next: NextFunction) 
   )
     .then((card) => {
       if (!card) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       res.send({
         message: 'Лайк удален',
@@ -103,7 +104,7 @@ export const deleteLike = (req: AuthRequest, res: Response, next: NextFunction) 
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.invalidId());
+        next(Errors.badRequest(ERROR.message.INVALID_ID_ERROR));
       } else {
         next(err);
       }

@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { INTERNAL_SERVER_ERROR } from '../constants/errors';
+import { ERROR } from '../constants/errors';
 import Errors from '../errors/errors';
 
 export const pageError = (req: Request, res: Response, next: NextFunction) => {
-  next(Errors.notFoundPage());
+  next(Errors.notFound(ERROR.message.NOT_FOUND_PAGE));
 };
 
 export const serverErorr = (
@@ -12,9 +12,9 @@ export const serverErorr = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { status = INTERNAL_SERVER_ERROR.code, message } = error;
+  const { status = ERROR.code.SERVER, message } = error;
   res.status(status).send({
-    message: status === INTERNAL_SERVER_ERROR.code ? INTERNAL_SERVER_ERROR.message : message,
+    message: status === ERROR.code.SERVER ? ERROR.message.INTERNAL_SERVER_ERROR : message,
   });
   next();
 };
