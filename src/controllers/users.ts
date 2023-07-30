@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import Errors from '../errors/errors';
+import { ERROR } from '../constants/errors';
 import { AuthRequest } from '../middlewares/auth';
 
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
@@ -18,13 +19,13 @@ export const getUserById = (req: AuthRequest, res: Response, next: NextFunction)
     .select('-__v')
     .then((user) => {
       if (!user) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(Errors.invalidId());
+        next(Errors.badRequest(ERROR.message.INVALID_ID_ERROR));
       } else {
         next(err);
       }
@@ -57,7 +58,7 @@ export const postUser = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(Errors.badRequest());
+        next(Errors.badRequest(ERROR.message.BAD_REQUEST));
       } else if (err.code === 11000) {
         next(Errors.conflictError());
       } else {
@@ -80,13 +81,13 @@ export const patchUser = (req: AuthRequest, res: Response, next: NextFunction) =
     .select('-__v')
     .then((user) => {
       if (!user) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(Errors.badRequest());
+        next(Errors.badRequest(ERROR.message.BAD_REQUEST));
       } else {
         next(err);
       }
@@ -107,13 +108,13 @@ export const patchUserAvatar = (req: AuthRequest, res: Response, next: NextFunct
     .select('-__v')
     .then((user) => {
       if (!user) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(Errors.badRequest());
+        next(Errors.badRequest(ERROR.message.BAD_REQUEST));
       } else {
         next(err);
       }
@@ -139,15 +140,9 @@ export const getCurrentUser = (req: AuthRequest, res: Response, next: NextFuncti
     .select('-__v')
     .then((user) => {
       if (!user) {
-        throw Errors.notFoundRequest();
+        throw Errors.notFound(ERROR.message.NOT_FOUND_REQUEST);
       }
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(Errors.invalidId());
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
